@@ -127,43 +127,43 @@ namespace Noobot.Core
 
         public async Task MessageReceived(SlackMessage message)
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            _logger.LogInformation($"[Message found from '{message.User.Name}']");
+
+            IMiddleware pipeline = _serviceProvider.GetRequiredService<IMiddleware>();
+            var incomingMessage = new IncomingMessage
+            {
+                RawText = message.Text,
+                FullText = message.Text,
+                UserId = message.User.Id,
+                Username = GetUsername(message),
+                UserEmail = message.User.Email,
+                Channel = message.ChatHub.Id,
+                ChannelType = message.ChatHub.Type == SlackChatHubType.DM ? ResponseType.DirectMessage : ResponseType.Channel,
+                UserChannel = await GetUserChannel(message),
+                BotName = _connection.Self.Name,
+                BotId = _connection.Self.Id,
+                BotIsMentioned = message.MentionsBot
+            };
+
+            incomingMessage.TargetedText = incomingMessage.GetTargetedText();
+
             try
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                _logger.LogInformation($"[Message found from '{message.User.Name}']");
-
-                IMiddleware pipeline = _serviceProvider.GetRequiredService<IMiddleware>();
-                var incomingMessage = new IncomingMessage
-                {
-                    RawText = message.Text,
-                    FullText = message.Text,
-                    UserId = message.User.Id,
-                    Username = GetUsername(message),
-                    UserEmail = message.User.Email,
-                    Channel = message.ChatHub.Id,
-                    ChannelType = message.ChatHub.Type == SlackChatHubType.DM ? ResponseType.DirectMessage : ResponseType.Channel,
-                    UserChannel = await GetUserChannel(message),
-                    BotName = _connection.Self.Name,
-                    BotId = _connection.Self.Id,
-                    BotIsMentioned = message.MentionsBot
-                };
-
-                incomingMessage.TargetedText = incomingMessage.GetTargetedText();
-
                 foreach (ResponseMessage responseMessage in pipeline.Invoke(incomingMessage))
                 {
                     await SendMessage(responseMessage);
                 }
-
-                stopwatch.Stop();
-
-                _logger.LogInformation($"[Message ended - Took {stopwatch.ElapsedMilliseconds} milliseconds]");
-                _averageResponse.Log(stopwatch.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
+                _logger.LogError($"ERROR WHILE PROCESSING MESSAGE: {ex}");
             }
+
+            stopwatch.Stop();
+
+            _logger.LogInformation($"[Message ended - Took {stopwatch.ElapsedMilliseconds} milliseconds]");
+            _averageResponse.Log(stopwatch.ElapsedMilliseconds);
         }
 
         public async Task Ping()
