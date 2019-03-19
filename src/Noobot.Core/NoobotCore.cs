@@ -116,7 +116,7 @@ namespace Noobot.Core
                     if (task.IsCompleted && !task.IsCanceled && !task.IsFaulted)
                     {
                         _logger.LogInformation("Connection restored.");
-                        _serviceProvider.GetService<StatsPlugin>()?.IncrementState("ConnectionsRestored");
+                        _serviceProvider.GetService<StatsPlugin>().IncrementState("ConnectionsRestored");
                     }
                     else
                     {
