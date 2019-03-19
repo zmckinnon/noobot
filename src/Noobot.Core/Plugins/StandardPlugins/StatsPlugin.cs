@@ -11,7 +11,7 @@ namespace Noobot.Core.Plugins.StandardPlugins
         private readonly Dictionary<string, object> _stats = new Dictionary<string, object>();
         private readonly object _lock = new object();
 
-        public StatsPlugin(ILogger logger)
+        public StatsPlugin(ILogger<StatsPlugin> logger)
         {
             _logger = logger;
         }

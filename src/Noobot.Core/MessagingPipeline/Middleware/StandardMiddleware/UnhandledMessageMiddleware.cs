@@ -12,7 +12,7 @@ namespace Noobot.Core.MessagingPipeline.Middleware.StandardMiddleware
     {
         private readonly ILogger _logger;
 
-        public UnhandledMessageMiddleware(ILogger logger)
+        public UnhandledMessageMiddleware(ILogger<UnhandledMessageMiddleware> logger)
         {
             _logger = logger;
         }

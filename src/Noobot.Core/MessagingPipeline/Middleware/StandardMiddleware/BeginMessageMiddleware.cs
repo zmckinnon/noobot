@@ -11,7 +11,7 @@ namespace Noobot.Core.MessagingPipeline.Middleware.StandardMiddleware
         private readonly StatsPlugin _statsPlugin;
         private readonly ILogger _logger;
 
-        public BeginMessageMiddleware(IMiddleware next, StatsPlugin statsPlugin, ILogger logger) : base(next)
+        public BeginMessageMiddleware(IMiddleware next, StatsPlugin statsPlugin, ILogger<BeginMessageMiddleware> logger) : base(next)
         {
             _statsPlugin = statsPlugin;
             _logger = logger;

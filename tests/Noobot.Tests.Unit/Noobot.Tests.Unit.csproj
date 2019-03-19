@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="expectedobjects" Version="2.3.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="Moq" Version="4.9.0" />
     <PackageReference Include="shouldly" Version="3.0.0" />

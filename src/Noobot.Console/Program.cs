@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Noobot.Core;
 using Noobot.Core.Configuration;
-using Noobot.Core.DependencyResolution;
+using Noobot.Core.Extensions;
 
 namespace Noobot.Console
 {
@@ -29,26 +29,19 @@ namespace Noobot.Console
         
         private static async Task RunNoobot()
         {
-            var containerFactory = new ContainerFactory(
-                new ConfigurationBase(),
-                JsonConfigReader.DefaultLocation(),
-                GetLogger());
+            var configReader = JsonConfigReader.DefaultLocation();
 
-            INoobotContainer container = containerFactory.CreateContainer();
-            _noobotCore = container.GetNoobotCore();
+            var services = new ServiceCollection()
+                .AddLogging(logging =>
+                {
+                    logging.AddConsole();
+                })
+                .AddNoobotCore(configReader);
+            var serviceProvider = services.BuildServiceProvider();
+
+            _noobotCore = serviceProvider.GetRequiredService<INoobotCore>();
 
             await _noobotCore.Connect();
-        }
-
-        private static ILogger GetLogger()
-        {
-            var services = new ServiceCollection();
-            services.AddLogging(logging =>
-            {
-                logging.AddConsole();
-            });
-            var serviceProvider = services.BuildServiceProvider();
-            return serviceProvider.GetRequiredService<ILogger<Program>>();
         }
 
         private static void ConsoleOnCancelKeyPress(object sender, ConsoleCancelEventArgs consoleCancelEventArgs)
