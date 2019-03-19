@@ -15,7 +15,7 @@ namespace Noobot.Core.Extensions
 
             // Middleware
             services.AddTransient<IMiddleware, UnhandledMessageMiddleware>();
-             if (configReader.AboutEnabled)
+            if (configReader.AboutEnabled)
             {
                 services.Decorate<IMiddleware, AboutMiddleware>();
             }
